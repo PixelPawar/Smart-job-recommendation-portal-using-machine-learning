@@ -7,9 +7,10 @@ __pycache__/
 *.pyc
 
 # Data files
-data/
+data/raw/
+data/processed/
 *.csv
-*.zip
+
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
