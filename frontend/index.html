@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Job Recommendation Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .job-card {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #007BFF;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .loading {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Smart Job Recommendation Portal</h1>
+
+    <label>Enter Skills</label>
+    <input type="text" id="skills" placeholder="e.g. Python, Machine Learning">
+
+    <label>Location (Optional)</label>
+    <input type="text" id="location" placeholder="e.g. US, NY">
+
+    <label>Experience Level (Optional)</label>
+    <input type="text" id="experience" placeholder="e.g. Mid-Senior level">
+
+    <button onclick="getRecommendations()">Get Recommendations</button>
+
+    <div id="message"></div>
+    <div id="results"></div>
+</div>
+
+<script>
+async function getRecommendations() {
+
+    const skills = document.getElementById("skills").value;
+    const location = document.getElementById("location").value;
+    const experience = document.getElementById("experience").value;
+
+    const messageDiv = document.getElementById("message");
+    const resultsDiv = document.getElementById("results");
+
+    resultsDiv.innerHTML = "";
+    messageDiv.innerHTML = "";
+
+    if (!skills.trim()) {
+        messageDiv.innerHTML = "<div class='error'>Please enter skills.</div>";
+        return;
+    }
+
+    messageDiv.innerHTML = "<div class='loading'>Loading recommendations...</div>";
+
+    try {
+        const response = await fetch("http://127.0.0.1:5000/recommend", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                skills: skills,
+                location: location,
+                experience: experience
+            })
+        });
+
+        const data = await response.json();
+
+        messageDiv.innerHTML = "";
+
+        if (data.error) {
+            messageDiv.innerHTML = "<div class='error'>" + data.error + "</div>";
+            return;
+        }
+
+        if (data.length === 0) {
+            resultsDiv.innerHTML = "<div class='error'>No jobs found.</div>";
+            return;
+        }
+
+        data.forEach(job => {
+            resultsDiv.innerHTML += `
+                <div class="job-card">
+                    <h3>${job.title}</h3>
+                    <p><strong>Location:</strong> ${job.location}</p>
+                    <p><strong>Industry:</strong> ${job.industry}</p>
+                    <p><strong>Experience:</strong> ${job.experience}</p>
+                </div>
+            `;
+        });
+
+    } catch (error) {
+        messageDiv.innerHTML = "<div class='error'>Backend connection failed.</div>";
+    }
+}
+</script>
+
+</body>
+</html>
