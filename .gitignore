@@ -1,0 +1,20 @@
+# Model files
+ML/Models/
+*.pkl
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Data files
+data/processed/
+
+# System
+FETCH_HEAD
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual env
+venv/
+.env
