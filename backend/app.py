@@ -5,9 +5,11 @@ from recommender import recommend_jobs
 app = Flask(__name__)
 CORS(app)  # Allows frontend to connect
 
+
 @app.route("/")
 def home():
     return "Smart Job Recommendation Backend Running"
+
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
@@ -22,10 +24,18 @@ def recommend():
         if not skills:
             return jsonify({"error": "Skills input is required"}), 400
 
+        # Convert experience to integer if possible
+        experience_years = None
+        if experience:
+            try:
+                experience_years = int(experience)
+            except:
+                experience_years = None
+
         results = recommend_jobs(
-            skills,
+            user_input=skills,
             location_filter=location,
-            experience_filter=experience
+            experience_years=experience_years
         )
 
         return jsonify(results)
